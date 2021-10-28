@@ -6,6 +6,4 @@ Manuel Soto Romero
 
 ### Contenido :books:
 
-| Semana | Tema                               |
-| ------ | :--------------------------------- |
-| 1      | [Introducción](semana01/README.md) |
+1. [Introducción](semana01/README.md)

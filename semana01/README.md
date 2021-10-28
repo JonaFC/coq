@@ -2,8 +2,6 @@
 
 ## Introducción
 
-<img src="../imagenes/pizarron.png" align="right" height="100" width="100" hspace="10">
-
 Desarrollar software hoy es una tarea difícil que hoy en día debido a todo lo que implica y que se encuentra en 
 crecimiento constante. Entre los objetivos más importantes a tomar en cuenta en un desarrollo se encuentra el cuidado de
 la calidad del producto de software. 
@@ -54,15 +52,22 @@ Nos enfocaremos en el estudio de tres cosas:
 - El uso del estilo de programación funcional que nos permitan razonar de forma más simple sobre los programas así como
   servir como vuente entre la lógica y la programación.
 
-### Lógica
+### :large_orange_diamond: <ins>Lógica</ins>
 
 ...
 
-### Asistentes de prueba
+### :large_orange_diamond: <ins>Asistentes de prueba</ins>
 
 ...
 
-### Programación Funcional
+### :large_orange_diamond: <ins>Programación Funcional</ins>
+...
+
+### :large_orange_diamond: <ins>Instalación CoqIDE</ins>
+
+...
+
+### :pencil: Actividades
 
 ...
 
