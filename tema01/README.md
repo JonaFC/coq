@@ -169,4 +169,4 @@ son programas*.
 ![imagen](https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fcdn.playbuzz.com%2Fcdn%2F6b1cd6a9-4e6f-4b8e-b320-e3b33f8d0a65%2F8e08b3b4-d037-4da5-99f9-de3215ea37c0.gif&f=1&nofb=1)
 
 
-[`Anterior`](../README.md) | [`Siguiente`](../semana02/README.md)
+[`Anterior`](../README.md) | [`Siguiente`](../tema02/README.md)
