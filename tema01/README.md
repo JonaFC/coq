@@ -1,4 +1,4 @@
-[`Introducción a la Verificación Formal con Coq`](../README.md) > `Semana 1`
+[`Introducción a la Verificación Formal con Coq`](../README.md) > `Tema 1`
 
 ## Introducción
 
@@ -161,7 +161,7 @@ de ejecutar la función podría ser `suma 5`. Se aprecia el uso de
 definiciones y de la recursión.
 
 Para los propósitos de este curso, la programación funcional juega un rol importante. Funciona justamente como un puente
-entre la lógica y las ciencias de la computación. De hecho, Coq puede ver como una combinación de un lenguaje funcional
+entre la lógica y las ciencias de la computación. De hecho, Coq se puede ver como una combinación de un lenguaje funcional
 con un conjunto de pruebas que permiten declarar y probar condiciones lógica. Más aún, cuando miramos más de cerca, 
 podemos notar que en realidad estos dos aspectos son parte de la misma *maquinaria* dicho de otra forma *las pruebas
 son programas*.
