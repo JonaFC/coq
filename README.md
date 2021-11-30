@@ -6,6 +6,8 @@
 Manuel Soto Romero   
 Luis Felipe Benítez Lluis	
 
+*Nota:* Material tomado de Software Foundations con ligeras modificaciones.
+
 ### Descripción :memo:
 
 En este curso el estudiante adquirirá experiencia en el uso del asistente de pruebas __Coq__ con el
@@ -20,7 +22,8 @@ fin de introducirlo en el mundo de la verificación formal.
 
 ### Contenido :date:
 
-| Semana   | Tema                               | Material |
-| :------: | :--------------------------------- | :------- |
-| 1        | [Introducción](semana01/README.md) |          |
+| Tema                                                     | Material |
+| :------------------------------------------------------- | :------- |
+| [1. Introducción](tema01/README.md)                      |          |
+| [2. Programación Funcional en __Coq__](tema02/README.md) |          |
 
