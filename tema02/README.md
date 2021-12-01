@@ -181,5 +181,120 @@ Definition orb' (b1:bool) (b2:bool) : bool :=
 > constructores en su definición que es justo lo que ocurre con este último ejemplo.
 ---
 
+![imagen](https://media.baamboozle.com/uploads/images/222104/1608271821_11661)
 
+#### :large_orange_diamond: <ins>Tipos</ins>
+
+Cada expresión en __Coq__ tiene un tipo que describe el tipo de elemento que evalúa. El comando `Check` permite mostrar
+el tipo de una expresión.
+
+```coq
+Check true.
+(* ==> true : bool *)
+```
+
+Si después de `Check` se colocan dos puntos y un tipo, __Coq__ realiza la verificación de tipos terminando con un error
+en caso de que sea incorrecto.
+
+```coq
+Check true
+   : bool.
+Check (negb true)
+   : bool.
+Check negb
+   : bool -> bool.
+```
+
+#### :large_orange_diamond: <ins>Tipos definidos en términos de otros</ins>
+
+Los tipos de datos que hemos definido hasta ahora son básicamente *enumeraciones* donde las definiciones explícitamente
+enumeran un conjunto finito de constructores. Otra forma de definir tipos es la siguiente:
+
+```coq
+Inductive rgb : Type :=
+   | red
+   | green
+   | blue.
+
+Inductive color : Type :=
+   | black
+   | white
+   | primary (p : rbg).
+```
+
+donde el tipo `color` define constructores que pueden recibir un argumento de tipo `rgb`. Además podemos definir funciones
+que hagan uso de reconocimiento de patrones usando estas nuevas definiciones:
+
+```coq
+Definition monochrome (c : color) : bool :=
+   match c with
+   | black => true
+   | white => true
+   | primary p => false
+   end.
+
+Definition isred (c : color) : bool := 
+   match c with
+   | black => false
+   | white => false
+   | primary red => true
+   | primary _ => false
+```
+
+El símbolo `_` indica que no importa el valor particular que tome el argumento de `primary`. Coloquialmente lo llamamos *no me importa*.
+
+#### :large_orange_diamond: <ins>Módulos</ins>
+
+__Coq__ provee un sistema modular que permite organizar de mejor manera las definiciones en el código, esto es similar a
+otros lenguajes, donde una vez definido un módulo podemos hacer referencia a las funciones definidas en él por medio de
+notaciones de la forma `Modulo.foo`. Sin embargo a diferencia de otros lenguajes, esto no debe estar necesariamente en
+archivos distintos:
+
+```coq
+Module Prueba.
+   Definition b : rgb := blue.
+End Prueba.
+
+Definition b : bool := true.
+
+Check Prueba.b : rgb.
+Check b : bool.
+```
+
+#### :large_orange_diamond: <ins>Tuplas</ins>
+
+Un constructor definido para recibir varios parámetros puede ser usados para crear un tipo *tupla*. Por ejemplo, 
+consideremos la representación un arreglo de 4 bits ([nibble](https://es.wikipedia.org/wiki/Nibble)). Primero, podemos
+definir el tipo `bit` que básicamente es otra forma de llamar a `bool`. Partiendo de este tipo, definimos el tipo 
+`nibble`.
+
+```coq
+Inductive bit : Type :=
+   | B0
+   | B1.
+
+Inductive nibble : Type :=
+   | bits (b0 b1 b2 b3 : bit)
+
+Check (bits B1 B0 B1 B0)
+   : nibble.
+```
+
+Como es usual en otros lenguajes, si queremos acceder a cada elemento individualmente, podemos por supuesto, usar a 
+nuestro buen amigo el reconocimiento de patrones. Por ejemplo, la función `todos_cero` revisa que en un nibble todos los
+bits sean cero. 
+
+```coq
+Definition todos_cero (nb : nibble) : bool :=
+   match nb with
+   | (bits B0 B0 B0 B0) => true
+   | (bits _ _ _ _) => false
+   end.
+
+Compute (todos_cero (bits B1 B0 B1 B0)).
+(* ==> false : bool *)
+Compute (todos_cero (bits B0 B0 B0 B0)).
+(* ==> false : bool *)
+```
+ 
 [`Anterior`](../tema01/README.md) | [`Siguiente`](../tema03/README.md)
