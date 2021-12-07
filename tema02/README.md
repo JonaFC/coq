@@ -18,7 +18,7 @@ de manera formal. Entre las características que tienen los lenguajes de este es
    muy similar a la definición de gramáticas. Estas definiciones permiten además definir estructuras de datos genéricas
    mediante *sistemas de tipos polimóficos* además de aprovechar ampliamente la técnica de *reconocimiento de patrones*.
 
-En este material, estudiaremos las principales característica del lenguaje de programación funcional que provee __Coq__ llamado __Gallina__ así como una serie de *tácticas* básicas  que podemos usar para provar propiedades sobes los 
+En este material, estudiaremos las principales característica del lenguaje de programación funcional que provee __Coq__ llamado __Gallina__ así como una serie de *tácticas* básicas  que podemos usar para probar propiedades sobes los 
 programas escritos en éste.
 
 ![imagen](https://1.bp.blogspot.com/-QzhsYlLiGsg/WDzqnDaJl-I/AAAAAAAALe4/aTQaaOYmzkI4RQcAr-E0csUhT5i6VWwawCLcB/s1600/firstclass.png)
@@ -46,7 +46,7 @@ Este tipo de dato se llama `dia` y los valores para dicho tipo son justamente lo
 el tipo de dato, podemos definir funciones sofre dicho tipo. Por ejemplo:
 
 ```coq
-Definition siguiente_dia (d:day) : day :=
+Definition siguiente_dia (d:dia) : dia :=
    match d with
    | lunes => martes
    | martes => miercoles
