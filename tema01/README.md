@@ -1,4 +1,4 @@
-[`Introducción a la Verificación Formal con Coq`](../README.md) > `Tema 1`
+
 
 ## Introducción
 
