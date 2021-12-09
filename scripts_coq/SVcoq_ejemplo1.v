@@ -21,7 +21,7 @@
     *)
     
 
-(** >1 Tipos de datos y funciones **)
+(** ** >1 Tipos de datos y funciones **)
 Inductive dia : Type :=
    | lunes
    | martes
@@ -30,6 +30,8 @@ Inductive dia : Type :=
    | viernes
    | sabado
    | domingo.
+   
+Print dia_rec.
 
    
 Definition siguiente_dia (d:dia) : dia :=
@@ -55,7 +57,7 @@ Proof.
 Qed.
 
 
-(** >2 Booleanos *)
+(** ** >2 Booleanos *)
 
 
 Inductive bool : Type :=
@@ -89,8 +91,19 @@ Proof. simpl. reflexivity. Qed.
 Example prueba_orb4: (orb true true) = true.
 Proof. simpl. reflexivity. Qed.
 
+Example prueba_orbGen: forall b :bool,
+  true = (orb true b).
+Proof.
+destruct b.
+  simpl. reflexivity.
+  apply prueba_orb1.
+Qed.
+  
+
 Notation "x && y" := (andb x y).
 Notation "x || y" := (orb x y).
+
+Check true && false.
 
 Example prueba_orb5: false || false || true = true.
 Proof. simpl. reflexivity. Qed.
@@ -122,15 +135,19 @@ Nótese que esta acersión tiene una expresión de la forma
 entradas. Mas adelante se abordará el manejo de expresiones 
 lógicas. *)
  
-Example neg_eq_neg': forall b: bool,
+Lemma neg_eq_neg': forall b: bool,
   negb b = negb' b.
 Proof.
+destruct b.
+simpl. reflexivity.
+simpl. reflexivity.
+Qed.
 (*La prueba de esto se puede plantear haciendo 
 una búsqueda exhaustiva de sus entradas. La táctica
 "destruct b" ayuda a desestructurar los valores que 
 puede tener 'b'. Nótese como esto divide la meta en dos submetas,
 una por cada caso.*)
-Admitted.
+
 
 
 (*Análogamente podemos hacer las pruebas para los
@@ -139,12 +156,22 @@ valores 'b1' y 'b2'.*)
 Example andb_eq_andb': forall b1 b2: bool,
   andb b1 b2 = andb' b1 b2.
 Proof.
-Admitted.
+destruct b1.
+destruct b2.
+simpl. reflexivity.
+simpl. reflexivity.
+destruct b2.
+simpl. reflexivity.
+simpl. reflexivity.
+Qed.
+
 
 Example orb_eq_orb': forall b1 b2: bool,
   orb b1 b2 = orb' b1 b2.
 Proof.
-Admitted.
+destruct b1,b2; simpl; reflexivity.
+Qed.
+
 
 
 (* La primera versión hizo una caza de patrones únicamente 
@@ -166,19 +193,29 @@ con la original.*)
 Example andb_eq_andb'': forall b1 b2: bool,
   andb b1 b2 = andb'' b1 b2.
 Proof.
-Admitted.
+destruct b1,b2; simpl; reflexivity.
+Qed.
+
 
 
 (* Podemos hacer el equivalente para or y automatizar
 repeticiones en tácticas. Esto ayuda para hacer las pruebas
 mas tolerantes a cambios pequeños y favorecer la automatización*)
-Definition orb'' (b1:bool) (b2:bool) : bool. 
-Admitted.
-Example orb_eq_orb'':bool. Admitted.
+Definition orb'' (b1:bool) (b2:bool) : bool:=
+  match b1,b2 with 
+    | true, _ => true
+    | false, true => true
+    | false, false => false
+  end. 
+
+Example orb_eq_orb'': forall b1 b2: bool,
+  orb b1 b2 = orb'' b1 b2.
+Proof.
+destruct b1,b2; simpl; reflexivity.
+Qed.
 
 
-
-(** >3 Tipos *)   
+(** ** >3 Tipos *)   
 Check true.
 (* ==> true : bool *)   
 
@@ -200,7 +237,7 @@ Check Set.
 Check Type.
 
 
-(** >4 Tipos definidos en términos de otros*)
+(** ** >4 Tipos definidos en términos de otros*)
    
 Inductive rgb : Type :=
    | red
@@ -274,7 +311,7 @@ error para este caso, pero esta idea se elaborará mas adelante.
 Definition prj_3vl (c:bool_3vl):bool := 
   match c with 
     | bol b => b
-    | uk => false
+    | uk => false(*error*)
   end.
 Compute prj_3vl (bol true).
 
@@ -283,13 +320,12 @@ se ajusten de manera concorde. Si bien esto se puede hacer
 con un análisis exhaustivo de casos, resulta natural tomar
 pauta de la función negb que ya computa esto para valores 
 puramente booleanos. *)
-Definition negb_3vl (c: bool_3vl): bool_3vl
-. Admitted.
-(*  :=
-  match c with 
-    | bol b =>  (*insertar def*)
-    | uk => (*insertar def*)
-  end. *)
+Definition negb_3vl (c: bool_3vl): bool_3vl:=
+  match c with
+    | bol b => bol (negb b)
+    | uk => uk
+   end.
+
 Compute negb_3vl (bol true).
 
 (* Ver que negb_3vl en efecto extiende a negb
@@ -297,10 +333,11 @@ se puede expresar por medio de una aserción y probar*)
 Proposition negb_prj_3vl: forall b: bool,
   prj_3vl (negb_3vl (bol b))= negb b.
 Proof.
-Admitted.
+  destruct b; simpl; reflexivity.
+Qed.
 
 
-(** >5 Módulos*)
+(** ** >5 Módulos*)
 
 Module Prueba.
    Definition b : rgb := blue.
@@ -312,7 +349,7 @@ Check Prueba.b.
 Check b.
   
   
-(** >6 Tuplas*) 
+(** ** >6 Tuplas*) 
 Inductive bit : Type :=
    | B0
    | B1.
@@ -332,7 +369,13 @@ Compute (todos_cero (bits B1 B0 B1 B0)).
 (* ==> false : bool *)
 Compute (todos_cero (bits B0 B0 B0 B0)).
 (* ==> false : bool *)
-   
+
+
+(*Podemos definir una función que invierta los valores en 
+un nibble  TAREA MORAL*)
+Definition rev_nibble (nb : nibble): nibble. Admitted. 
+
+Compute rev_nibble (bits B0 B1 B0 B1).
 
    
    
