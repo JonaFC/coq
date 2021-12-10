@@ -296,5 +296,81 @@ Compute (todos_cero (bits B1 B0 B1 B0)).
 Compute (todos_cero (bits B0 B0 B0 B0)).
 (* ==> false : bool *)
 ```
+
+#### :large_orange_diamond: <ins>Números</ins>
+
+Otro tipo de dato interesante son los números naturales que muy probablemente nuestros lectores y lectoras ya han definido en otros lenguajes. En __Coq__ podemos definir el tipo de dato como sigue así como una función sobre el mismo:
+
+```coq
+module Naturales.
+
+Inductive nat : Type :=
+   | 0
+   | S (n : nat).
+
+Definition pred (n : nat) : nat :=
+   match n with
+   | 0    => 0
+   | S n' => n'
+   end.
+
+End Naturales.
+```
+
+Debido a que los números naturales son un tipo de dato tan esencial, __Coq__ imprime los mismos en decimal para facilitar la lectura. 
+
+**Nota:** Esta manera de imprimir funciona sobre el tipo `nat` definido en la biblioteca estándar, no del `nat` definido por nosotros.
+
+```coq
+Check (S (S (S (S 0)))).
+(* ==> 4 : nat *)
+
+Definition menosdos (n : nat) : nat :=
+   match n with
+   | 0        => 0
+   | S 0      => 0
+   | S (S n') => n'
+   end.
+
+Compute (menosdos 4).
+(* ==> 2 : nat *)
+```
+
+Al igual que en otros lenguajes, los constructores de un tipo de dato definen funciones, tal y como las ya definidas.
+
+```coq
+Check S : nat -> nat.
+Check ped : nat -> nat.
+Check minustwo : nat -> nat.
+```
+
+Dada la naturaleza recursiva de este tipo de dato, es clara la necesidad de contar con un método de definición de funciones recursivas para lo cual se usa la palabra reservada `Fixpoint` en lugar de `Definition`.
+
+```coq
+Fixpoint par (n : nat) : bool :=
+   match n with
+   | 0 => true
+   | S 0 => false
+   | S (S n') => par n'
+   end.
+
+Definition impar (n : nat) : bool :=
+   negb (par n).
+
+(* par S (S (S (S 0)))
+   par (S (S 0))
+   par 0
+   true *)
+
+Example prueba_impar1: impar 1 = true.
+Proof. simpl. reflexivity. Qed.
+Example prueba_impar2: impar 4 = false.
+Proof. simpl. reflexivity. Que.
+```
+
+---
+> :warning: **Observación:** Al ejecutar estos *scripts* es probable que la lectora o lector hayan notado que `simpl` realmente no tiene efecto en la meta, todo el trabajo es realmente hecho por `reflexivity`. Platicaremos hacerca de esto, más adelante.
+---
+
  
 [`Anterior`](../tema01/README.md) | [`Siguiente`](../tema03/README.md)
