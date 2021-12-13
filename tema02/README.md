@@ -372,5 +372,240 @@ Proof. simpl. reflexivity. Que.
 > :warning: **Observación:** Al ejecutar estos *scripts* es probable que la lectora o lector hayan notado que `simpl` realmente no tiene efecto en la meta, todo el trabajo es realmente hecho por `reflexivity`. Platicaremos hacerca de esto, más adelante.
 ---
 
- 
+También es posible definir funciones con más de un argumento:
+
+```coq
+Module Naturales2.
+
+Fixpoint suma (n : nat) (m : nat) : nat :=
+   match n with
+   | 0 => m
+   | s n' => S (suma n' m)
+   end.
+
+Compute (suma 3 2)
+(* ==> 5 : nat *)
+
+(* suma 3 2
+   suma (S (S (S 0)))) (S (S 0))
+   S (suma (S (S 0)) (S (S 0)))
+   S (S (suma (S 0) (S (S 0))))
+   S (S (S (suma 0 (S (S 0)))))
+   S (S (S (S (S 0)))) *)
+
+Fixpoint mult (n m : nat) : nat :=
+   match n with
+   | 0 => 0
+   | S n' => suma m (mult n' m)
+   end.
+
+Example prueba_mult1: (mult 3 3) = 9.
+Proof. simpl. reflexivity. Qed.
+
+Fixpoint resta (n m : nat) : nat :=
+   match n,m with
+   | 0, _ => 0
+   | S _, 0 => n
+   | S n', S m' => resta n' m'
+   end.
+
+End Naturales2.
+
+Fixpoint exp (base potencia : nat) : nat :=
+   match potencia with
+   | 0 => S 0
+   | S p => mult base (exp base p)
+   end.
+```
+
+Al igual que con los booleanos, podemos definir la presedencia y asociatividad de operadores sobre los naturales:
+
+```coq
+Notation "x + y" := (suma x y)
+                     (at level 50, left associativity)
+                     : nat_scope.
+Notation "x - y" := (resta x y)
+                     (at level 50, left associativity)
+                     : nat_scope.
+Notation "x * y" := (mult x y)
+                     (at level 40, left associativity)
+                     : nat_scope.
+Check ((0 + 1) + 1) : nat.
+```
+
+---
+> :warning: **Observación:** Las anotaciones `leve`, `associativity` y `nat_scope` dan información adicional al analizador
+> sintáctico de __Coq__, básicamente indican la presedencia y asociatitividad y el alcance de estas reglas.
+---
+
+Otras funciones de comparación son:
+
+```coq
+Fixpoint soniguales (n m : nat) : bool :=
+   match n with
+   | 0 => match m with
+          | 0 => true
+          | S m' => false
+          end
+   | S n' => match m with
+             | 0 => false
+             | S m' => soniguales n' m'
+             end
+   end.
+
+Fixpoint menorigual (n m : nat) : bool :=
+   match n with
+   | 0 => true
+   | S n' =>
+       match m with
+       | 0 => false
+       | S m' => menorigual n' m'
+       end
+   end.
+
+Example prueba_menor1: menorigual 2 2 = true.
+Proof. simple. reflexivity. Qed.
+Example prueba_menor2: menorigual 2 4 = true.
+Proof. simple. reflexivity. Qed.
+Example prueba_menor_3 menorigual 4 2 = false.
+Proof. simple. reflexivity. Qed.
+
+Notation "x =? y" := (soniguales x y) (at level 70) : nat_scope.
+Notation "x <=? y" := (menorigual x y) (at level 70) : nat_scope.
+
+Example prueba_menor_3' (4 <=? 2) = false.
+Proof. simple. reflexivity. Qed.
+```
+
+### Pruebas por simplificación
+
+Ahora que hemos definido algunos tipos de datos y funciones, podemos realizar algunas demostraciones sobre propiedades
+de los mismos. En realidad ya lo hemos venido haciendo con cada `Example`. Dichas pruebas siempre hacen uso de `simpl`
+para simplificar ambos lados de la ecuación y posteriormente usan `reflexivity` para verificar que ambos lados contienen
+el mismo valor.
+
+Esta misma técnica puede usarse para probar otras propiedades. Por ejemplo, el hecho de que 0 es el elemento neutro de la
+suma puede probarse sólo observando que `0 + n` se reduce a `n` sin importar quién sea dicha `n`. Esto viene de la 
+definición de suma que dimos.
+
+```coq
+Theorem suma_0_n : forall n : nat, 0 + n = n.
+Proof.
+   intros n. simpl. reflexivity. Qed.
+```
+
+Algo importante y que hemos estado omitiendo es el uso de `reflexivity`. Este comando es mucho más poderoso de lo que 
+pareche. En los ejemplos que hemos visto, el uso de `simpl` no es realmente necesario debido a que `reflexivity` puede
+realizar la simplificación automáticamente cuando verifica que los dos lados son iguales; lo añadimos para que pudieramos
+notar estos pasos intermedios. De esta forma la prueba anterior quedaría como:
+
+```coq
+Theorem suma_0_n' : forall n : nat, 0 + n = n.
+Proof.
+   intros n. reflexivity. Qed.
+```
+
+Además, `reflexivity` permite hacer simplificaciones más complejas que las que hace `simpl`. Por ejemplo, intenta 
+*desdoblar* términos reemplazandolos por sus lados derechos. La principal razón de esto es que si `reflexivity` tiene
+éxito, llegamos a nuestra meta y no necesitamos más otras expresiones expandidas que se hayan creado en proceso de prueba.
+Por el contrario `simpl` se utiliza cuando necesitamos comprender la nueva meta que se crea, básicamente nos permite
+realizar una especie de depuración. Iremos hablando de esto poco a poco durante el curso.
+
+Notemos además que tenemos una nueva notación llamada `Theorem`. La diferencia entre `Theorem` y `Example` es realmente
+una cuestión de estilo, también existen otras como `Lemma`, `Fact`, `Remark` que básicamente significan lo mismo para
+__Coq__.
+
+También añadimos el cuantificador `forall n : nat`, lo cual indica a nuestro teorema que aplica para todos los números
+naturales. De hecho, de aquí viene el uso de `intros` que básicamente marca el inicio de la prueba. Algo similar a lo que
+hacemos en papel: "*Supongamos que...*".
+
+Las palabras reservadas `intros`, `simpl` y `reflexivity` son ejemplos de *tácticas*. Una táctica es un comando que se
+usa entre `Proof` y `Qed` para guiar el proceso de verificación de alguna afirmación que hagamos. Conoceremos otras
+tácticas más adelante y conforme las vayamos necesitando.
+
+### Pruebas por reescritura
+
+Otro tipo de teorema con el que nos podemos encontrar es el siguiente:
+
+```coq
+Theorem suma_ig : forall n m : nat, n = m -> n + n = m + m.
+```
+
+Notemos que este teorema impone una restricción que nos indica que esta propiedad sólo se cumple cuando `n = m`. El
+símbolo `->`, como es usual, denota una implicación. Llamaremos a esto *hipótesis*. De esta forma, además de suponer
+que `n` y `m` son naturales con `intros`, también debemos suponer la hipótesis para lo cual podemos usar `H`.
+
+
+```coq
+Proof.
+   intros n m.
+   intros H.
+   rewrite -> H.
+   reflexivity.
+Qed.
+```
+
+La línea `rewrite -> H` le indica a __Coq__ que reemplace el lado izquierdo de la hipótesis por su respectivo lado 
+derecho. La flecha indica cuál de los dos lados queremos reescribir, no es una implicación.
+
+De la misma forma podemos usar `Check` para examinar enunciados de lemas y teoremas previamente definidos, ya sea por
+nosotros o por la biblioteca estándar.
+
+```coq
+Check mult_n_O.
+(* ===> forall n : nat, 0 = n * 0 *)
+Check mult_n_Sm.
+(* ===> forall n m : nat, n * m + n = n * S m *)
+```
+
+Esto nos permitirá usar teoremas previamente demostrados junto a `rewrite`. Por ejemplo:
+
+```coq
+Theorem mult_n_0_m_0 : forall p q : nat, (p * 0) + (q * 0) = 0.
+Proof.
+   intros p q.
+   rewrite <- mult_n_O.
+   rewrite <- mult_n_O.
+   reflexivity.
+Qed.
+```
+
+### Pruebas por Análisis de Casos
+
+Como la persona que está leyendo este material sabrá de cursos anteriores, no todas las demostraciones pueden realizarse
+sólo reescribiendo o simplificando expresiones. Por ejemplo la siguiente prueba no puede resolverse usando las tácticas
+que conocemos hasta ahora:
+
+```coq
+Theorem suma_1_neq_0_1 : forall n : nat,
+  (n + 1) =? 0 = false.
+Proof.
+  intros n.
+  simpl.
+Abort.
+```
+
+El problema es que tenemos la expresión `n+1` que evidentemente no puede evaluarse si no sabemos la forma de `n`. Para
+hacer esto debemos hacer una especie de reconocimiento de patrones sobre `n` y para ello debemos obtener sus posibles
+constructores. Para hacer esto usaremos la táctica `destruct`.
+
+```coq
+Theorem suma_1_neq_0 : forall n : nat,
+  (n + 1) =? 0 = false.
+Proof.
+  intros n. destruct n as [| n'] eqn:E.
+  - reflexivity.
+  - reflexivity. 
+Qed.
+```
+
+La anotación `as [| n']` es llamado *intro pattern*. Le indica a __Coq__ el nombre de las variables que debe introducir
+en cada submeta separadas por un `|`. Por ejemplo, al tener dos posibles valores (0 y sucesor de un natural), se generarán dos submetas, la 
+primera cuando `n = 0` que como vemos no requiere variables, por lo tanto el primer elemento de `|` es vacío, la segunda
+generará un sucesor, dado que sucesor sí requiere variables, nombramos a dicha variable `n'`.
+
+Por otro lado, la anotación `eqn:E` es simplemente el nombre que se le da a la ecuación generada por `destruct`.
+
+Los guiones en la demostración se usan para identificar cada uno de los casos. Estos son opcionales.
+
 [`Anterior`](../tema01/README.md) | [`Siguiente`](../tema03/README.md)
