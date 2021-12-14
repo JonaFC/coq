@@ -26,4 +26,5 @@ fin de introducirlo en el mundo de la verificación formal.
 | :------------------------------------------------------- | :-------                                        |
 | [1. Introducción](tema01/README.md)                      |                                                 |
 | [2. Programación Funcional en __Coq__](tema02/README.md) | [**`Ejemplo 1`**](scripts_coq/SVcoq_ejemplo1.v) |
+| [3. Pruebas por Inducción](tema03/README.md)             |                                                 |
 
