@@ -136,4 +136,74 @@ Example prueba_tl: tl [1;2;3] = [2;3].
 Proof. reflexivity. Qed.
 ```
 
+### Propiedades sobre listas
+
+- De la misma forma en que hicimos con los números, podemos probar algunas propiedades sobre listas usando el método de
+  simplificación. Por ejemplo:
+
+  ```coq
+  Theorem concat_vacia : forall l : natlist, [] ++ l = l.
+  Proof.
+    reflexivity.
+  Qed.
+  ```
+
+- Por supuesto, también hay casos dónde realizar un análisis de casos nos es de gran utilidad, en este caso sobre la 
+  estructura de las listas.
+
+  ```coq
+  Theorem cola_longitud_pred : forall l : natlist, pred (length l) = length (tl l).
+  Proof.
+    intros l.
+    destruct l as [| n l '].
+    - (* l = nil *)
+      reflexivity.
+    - (* l = cons n l' *)
+      reflexivity.
+  Qed.
+  ```
+
+- Por supuesto, como la persona lectora está acostumbrada, muchos de los teoremas sobre listas se prueban por inducción
+  estructural.
+
+#### Inducción sobre listas
+
+- Primero, recordemos el principio de Inducción Estructural sobre Listas:
+
+  - Sea *P* la propiedad a probar.
+
+  - Primero, mostramos que *P* es verdadera cuando la lista es vacía.
+
+  - Después, mostramos que *P* es verdadera cuando la lista tiene cabeza y cola (`cons n l'`) suponiendo que `l` cumple
+    *P*.
+
+- Por ejemplo.
+
+   ```coq
+   Theorem concat_asoc : forall l_1 l_2 l_3 : natlist, (l_1 ++ l_2) ++ l_3 = l_1 ++ (l_2 ++ l_3).
+   Proof.
+    intros l_1 l_2 l_3.
+    induction l_1 as [| n l' IHl1'].
+    - (* l = nil *)
+      reflexivity.
+    - (* l = cons n l_1' *)
+      simpl.
+      rewrite -> IHl1'.
+      reflexivity.
+   Qed.
+
+   Fixpoint rev (l : natlist) : natlist :=
+    match l with
+    | nil => nil
+    | h :: t => rev t ++ [h]
+    end.
+
+   Example prueba_rev1: rev [1;2;3] = [3;2;1].
+   Proof. reflexivity. Qed.
+   Example prueba_rev2: rev nil = nil.
+   Proof. reflexivity. Qed.
+   ```
+   ```
+
+
 [`Anterior`](../tema01/README.md) | [`Siguiente`](../tema03/README.md)
