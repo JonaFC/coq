@@ -202,7 +202,43 @@ Proof. reflexivity. Qed.
    Proof. reflexivity. Qed.
    Example prueba_rev2: rev nil = nil.
    Proof. reflexivity. Qed.
-   ```
+
+   Theorem rev_length_1 : forall l : natlist, length (rev l) = length l.
+   Proof.
+    intros l.
+    induction l as [| n l' IHl'].
+    - (* l = nil *)
+      reflexivity.
+    - (* l = n :: l' *)
+      simpl.
+      rewrite <- IHl'.
+      (* ???????? *)
+   Abort.
+
+   (* Para probar rev_length_1 necesitamos otro teorema. *)
+   Theorem contat_length: forall l_1 l_2 : natlist, 
+    lenght (l_1 ++ l_2) = (length l_1) + (length l_2).
+   Proof.
+    intros l_1 l_2.
+    induction l_1 as [| n l_1' IHl1'].
+    - reflexivity.
+    - simpl. rewrite -> IHl1'. reflexivity.
+   Qed.
+
+   Theorem rev_length : forall l : natlist, length (rev l) = length l.
+   Proof.
+    intros l.
+    induction l as [| n l' IHl'].
+    - (* l = nil *)
+      reflexivity.
+    - (* l = n :: l' *)
+      simpl.
+      rewrite -> concat_length.
+      simpl.
+      rewrite -> IHl'.
+      rewrite -> add_comm.
+      reflexivity.
+   Qed.
    ```
 
 
