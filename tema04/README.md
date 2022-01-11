@@ -241,5 +241,108 @@ Proof. reflexivity. Qed.
    Qed.
    ```
 
+### Opciones
+
+Supongamos que necesitamos escribir una función que regrese el n-ésimo elemento de una lista, una posible definición
+es la siguiente:
+
+```coq
+Fixpoint nesimo1 (l:natlist) (n:nat) : nat :=
+  match l with
+  | nil => -1
+  | a :: l' => match n with
+               | 0 => a
+               | S n' => nesimo1 l' n'
+               end
+  end.
+```
+
+Esta solución tiene el defecto de que al llegar a la lista vacía regresa -1 lo cual puede ser confuso, pues no sabríamos
+si el elemento -1 está contenido en la lista o si en efecto se usó la definición con la lista vacía.
+
+El principal problema viene dado por el tipo de la función: `nat -> natlist -> nat`. Una mejor alternativa es cambiar
+el tipo de regreso de la función de manera que incluya un valor de error en casos similares al de nuestra función. 
+Veamos la definición de dicho tipo al cual llamaremos `natoption`.
+
+```coq
+Inductive natoption : Type :=
+  | Some (n : nat)
+  | None.
+```
+
+De esta forma podemos cambiar la definición de `nesimo` como sigue:
+
+```coq
+Fixpoint nesimo (l:natlist) (n:nat) : natoption :=
+  match l with
+  | nil => None
+  | a :: l' => match n with
+               | 0 => Some a
+               | S n' => nesimo l' n'
+               end
+  end.
+
+Example prueba_nesimo_1 : nesimo [4;5;6;7] 0 = Some 4.
+Proof. reflexivity. Qed.
+Example prueba_nesimo_2 : nesimo [4;5;6;7] 3 = Some 7.
+Proof. reflexivity. Qed.
+Example prueba_nesimo_3 : nesimo [4;5;6;7] 9 = None.
+Proof. reflexivity. Qed.
+```
+
+Por supuesto, para fines prácticos, necesitaremos sacar el número que envuelve a `Some`, para ello necesitaremos un 
+valor por defecto a devolver en caso de obtener `None`, podemos usar la siguiente función:
+
+```coq
+Definition getoption (d : nat) (o : natoption) : nat :=
+  match 0 with
+  | Some n' => n'
+  | None => d
+  end.
+```
+
+### Diccionarios
+
+Como ejemplo final, veamos cómo es posible definir otras estructuras de datos en __Coq__. En esta caso definiremos un
+simple diccionario. Para ello necesitamos definir nuestras llaves, en este caso considerando que sólo podemos tener
+llaves numéricas, de la misma forma, necesitaremos una función que nos permita comparar dichas llaves.
+
+```coq
+Inductive id : Type :=
+  | Id (n : nat).
+
+Definition eqb_id (x_1 x_2 : id) :=
+  match x1, x2 with
+  | Id n_1, Id n_2 => n_1 =? n_2
+  end.
+```
+
+Con esta definición podemos definir nuestros diccionarios como sigue junto con algunas funciones:
+
+```coq
+Module Diccionarios.
+Export NatList.
+
+Inductive diccionario : Type :=
+  | empty
+  | record (i : id) (v : nat) (m : diccionario).
+
+Definition actualiza (d : diccionario) (x : id) (value : nat) : diccionario :=
+  record v value d.
+
+Fixpoint busca (x : id) (d : diccionario) : natoption :=
+  match d with
+  | empty => None
+  | record y v d' => if eqb_id x y then
+                        Some v
+                     else
+                        find x d'
+  end.  
+```
+
+
+
+
+
 
 [`Anterior`](../tema01/README.md) | [`Siguiente`](../tema03/README.md)
