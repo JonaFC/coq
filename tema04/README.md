@@ -345,4 +345,4 @@ Fixpoint busca (x : id) (d : diccionario) : natoption :=
 
 
 
-[`Anterior`](../tema01/README.md) | [`Siguiente`](../tema03/README.md)
+[`Anterior`](../tema03/README.md) | [`Siguiente`](../tema06/README.md)
